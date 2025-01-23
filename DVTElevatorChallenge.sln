@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVTElevatorChallenge.Ui", "DVTElevatorChallenge\DVTElevatorChallenge.Ui.csproj", "{A3D8AAE5-22E1-4F9A-8C66-B92F79E4AF95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVTElevatorChallenge.Presentation", "DVTElevatorChallenge\DVTElevatorChallenge.Presentation.csproj", "{A3D8AAE5-22E1-4F9A-8C66-B92F79E4AF95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVTElevatorChallange.Core", "DVTElevatorChallange.Core\DVTElevatorChallange.Core.csproj", "{2416D03D-DDA5-4CF4-BB94-D0871F37274D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVTElevatorChallange.Core", "DVTElevatorChallange.Core\DVTElevatorChallange.Core.csproj", "{2416D03D-DDA5-4CF4-BB94-D0871F37274D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVTElevatorChallange.Tests", "DVTElevatorChallange.Tests\DVTElevatorChallange.Tests.csproj", "{0DCB39A3-AF66-44B4-BAC0-20831A50C1A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVTElevatorChallange.Tests", "DVTElevatorChallange.Tests\DVTElevatorChallange.Tests.csproj", "{0DCB39A3-AF66-44B4-BAC0-20831A50C1A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVTElevatorChallange.Application", "DVTElevatorChallange.Application\DVTElevatorChallange.Application.csproj", "{F7726075-03C7-42D9-88F0-E51DCA8B49FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVTElevatorChallange.Infrastructure", "DVTElevatorChallange.Infrastructure\DVTElevatorChallange.Infrastructure.csproj", "{00696371-3E31-4C66-870A-39872CBCC1CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{0DCB39A3-AF66-44B4-BAC0-20831A50C1A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DCB39A3-AF66-44B4-BAC0-20831A50C1A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DCB39A3-AF66-44B4-BAC0-20831A50C1A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7726075-03C7-42D9-88F0-E51DCA8B49FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7726075-03C7-42D9-88F0-E51DCA8B49FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7726075-03C7-42D9-88F0-E51DCA8B49FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7726075-03C7-42D9-88F0-E51DCA8B49FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00696371-3E31-4C66-870A-39872CBCC1CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00696371-3E31-4C66-870A-39872CBCC1CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00696371-3E31-4C66-870A-39872CBCC1CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00696371-3E31-4C66-870A-39872CBCC1CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

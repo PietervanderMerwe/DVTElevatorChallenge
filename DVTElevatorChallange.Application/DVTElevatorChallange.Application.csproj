@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
-    <Folder Include="Queries\" />
+    <Folder Include="Building\Command\" />
+    <Folder Include="Elevator\Command\" />
+    <Folder Include="Elevator\Query\" />
+    <Folder Include="Floor\Command\" />
   </ItemGroup>
 
 </Project>

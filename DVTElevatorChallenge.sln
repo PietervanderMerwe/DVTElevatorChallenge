@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVTElevatorChallenge.Presentation", "DVTElevatorChallenge\DVTElevatorChallenge.Presentation.csproj", "{A3D8AAE5-22E1-4F9A-8C66-B92F79E4AF95}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVTElevatorChallange.Core", "DVTElevatorChallange.Core\DVTElevatorChallange.Core.csproj", "{2416D03D-DDA5-4CF4-BB94-D0871F37274D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVTElevatorChallange.Domain", "DVTElevatorChallange.Core\DVTElevatorChallange.Domain.csproj", "{2416D03D-DDA5-4CF4-BB94-D0871F37274D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVTElevatorChallange.Tests", "DVTElevatorChallange.Tests\DVTElevatorChallange.Tests.csproj", "{0DCB39A3-AF66-44B4-BAC0-20831A50C1A3}"
 EndProject

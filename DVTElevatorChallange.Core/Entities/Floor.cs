@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DVTElevatorChallange.Core.Entities
+﻿namespace DVTElevatorChallange.Core.Entities
 {
-    internal class Floor
+    public class Floor
     {
+        public int FloorNumber { get; set; }
+        public Queue<Passenger> UpQueue { get; set; }
+        public Queue<Passenger> DownQueue { get; set; }
+        public List<Elevator> StoppedElevators { get; set; }
     }
 }

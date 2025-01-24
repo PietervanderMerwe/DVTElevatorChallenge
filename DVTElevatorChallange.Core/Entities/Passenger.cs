@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DVTElevatorChallange.Core.Entities
+﻿namespace DVTElevatorChallange.Core.Entities
 {
-    internal class Passenger
+    public class Passenger
     {
+        public int Id { get; }
+        public int DestinationFloor { get; }
     }
 }

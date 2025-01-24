@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DVTElevatorChallange.Application.Building
+﻿namespace DVTElevatorChallange.Application.Building
 {
-    internal class BuildingManager
+    public class BuildingManager : IBuildingManager
     {
+
     }
 }

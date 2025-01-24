@@ -2,9 +2,9 @@
 {
     public class Building
     {
-        public int ElevatorCount { get; private set; }
-        public int FloorCount { get; private set; }
-        public List<Elevator> ElevatorList { get; private set; }
-        public List<Floor> FloorList { get; private set;}
+        public int ElevatorCount { get; set; }
+        public int FloorCount { get; set; }
+        public List<Elevator> ElevatorList { get; set; }
+        public List<Floor> FloorList { get; set;}
     }
 }

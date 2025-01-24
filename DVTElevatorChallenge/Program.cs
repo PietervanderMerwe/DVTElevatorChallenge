@@ -1,5 +1,4 @@
-﻿// Resolve and run the ConsoleApplication
-using DVTElevatorChallenge.Presentation;
+﻿using DVTElevatorChallenge.Presentation;
 using DVTElevatorChallenge.Presentation.Configurations;
 using Microsoft.Extensions.DependencyInjection;
 

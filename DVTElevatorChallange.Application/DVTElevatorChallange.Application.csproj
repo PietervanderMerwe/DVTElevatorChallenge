@@ -6,11 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Building\Command\" />
-    <Folder Include="Elevator\Command\" />
-    <Folder Include="Elevator\Query\" />
-    <Folder Include="Floor\Command\" />
-  </ItemGroup>
-
 </Project>

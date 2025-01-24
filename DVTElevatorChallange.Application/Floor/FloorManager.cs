@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DVTElevatorChallange.Application.Floor
+﻿namespace DVTElevatorChallange.Application.Floor
 {
-    internal class FloorManager
+    public class FloorManager : IFloorManager
     {
     }
 }

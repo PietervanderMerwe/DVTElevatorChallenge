@@ -6,10 +6,14 @@ namespace DVTElevatorChallange.Application.ElevatorManager
     public interface IElevatorManager
     {
         bool AddElevators(int elevatorCount);
-        int GetAmountOfElevators();
+        List<Elevator> GetAllElevators();
+        Task MoveAllElevatorsToNextStopsAsync();
         void AddPassengerToElevator(Passenger passenger, int elevatorId);
         void RemovePassenger(Passenger passenger, int elevatorId);
-        Elevator GetBestElevatorToDispatch(int floorNum, Direction direction);
-        bool IsMovingTowardFloor(Elevator elevator, int floor);
+        void DispatchElevatorToFloor(int floorNum, Direction direction);
+        void ProcessFloorStop(Elevator elevator, int floorNum);
+
+        bool IsAnyElevatorMoving();
+
     }
 }

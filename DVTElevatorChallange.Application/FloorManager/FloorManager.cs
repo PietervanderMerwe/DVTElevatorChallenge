@@ -18,6 +18,22 @@ namespace DVTElevatorChallange.Application.FloorManager
             return _floorList.Count;
         }
 
+        public int GetRemainingUpQueueCount(int floorNumber)
+        {
+            var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
+                ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
+
+            return targetFloor.UpQueue.Count;
+        }
+
+        public int GetRemainingDownQueueCount(int floorNumber)
+        {
+            var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
+                ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
+
+            return targetFloor.DownQueue.Count;
+        }
+
         public void ClearUpQueue(int floorNumber)
         {
             var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
@@ -32,6 +48,36 @@ namespace DVTElevatorChallange.Application.FloorManager
                 ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
           
             targetFloor.DownQueue.Clear();
+        }
+
+        public List<Passenger> LoadDownQueuePassengers(int floorNumber, int passengerAmount)
+        {
+            var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
+        ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
+
+            var dequeuedPassengers = new List<Passenger>();
+
+            for (int i = 0; i < passengerAmount && targetFloor.DownQueue.Count > 0; i++)
+            {
+                dequeuedPassengers.Add(targetFloor.DownQueue.Dequeue());
+            }
+
+            return dequeuedPassengers;
+        }
+
+        public List<Passenger> LoadUpQueuePassengers(int floorNumber, int passengerAmount)
+        {
+            var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
+        ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
+
+            var dequeuedPassengers = new List<Passenger>();
+
+            for (int i = 0; i < passengerAmount && targetFloor.DownQueue.Count > 0; i++)
+            {
+                dequeuedPassengers.Add(targetFloor.UpQueue.Dequeue());
+            }
+
+            return dequeuedPassengers;
         }
 
         public bool AddPassenger(int totalPassengers, int currentFloor, int destinationFloor)
@@ -80,6 +126,19 @@ namespace DVTElevatorChallange.Application.FloorManager
                 ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
 
             floor.StoppedElevators.Remove(elevator);
+        }
+
+        public Direction DetermineDirection(Elevator elevator, int floorNumber)
+        {
+            var floor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
+                ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
+
+            if (elevator.Direction == Direction.Idle || elevator.FloorStopList.Count == 0)
+            {
+                return floor.UpQueue.Count > floor.DownQueue.Count ? Direction.Up : Direction.Down;
+            }
+
+            return elevator.Direction;
         }
 
         private Direction GetDirection(int currentFloor, int destinationFloor)

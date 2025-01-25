@@ -14,6 +14,7 @@ namespace DVTElevatorChallenge.Presentation
         private char _key { get; set; }
         private int _cursorInputArea;
 
+        private int _cursorElevatorArea;
         public ElevatorConsole(IBuildingManager buildingManager, IElevatorManager elevatorManager, IFloorManager floorManager)
         {
             _buildingManager = buildingManager;
@@ -29,6 +30,7 @@ namespace DVTElevatorChallenge.Presentation
         private async Task setupLoop()
         {
             Console.Clear();
+            _cursorElevatorArea = Console.CursorTop;
             ElevatorStatus();
             ElevatorCommand();
 
@@ -41,30 +43,51 @@ namespace DVTElevatorChallenge.Presentation
                 }
 
                 await Task.Delay(200);
+                await _elevatorManager.MoveAllElevatorsToNextStopsAsync();
+
+                if (_elevatorManager.IsAnyElevatorMoving())
+                {
+                    RefreshElevatorStatus();
+                }
             }
         }
 
-        private void ElevatorStatus()
+        public void ElevatorStatus()
         {
-            Console.WriteLine("------------------------------------------------------------------");
-            Console.WriteLine("");
-            Console.WriteLine("Elevator statistics");
-            Console.WriteLine("");
-            Console.Write("Elevator Count = " + _elevatorManager.GetAmountOfElevators().ToString());
-            Console.Write(" | ");
-            Console.Write("Floor Count = " + _floorManager.GetAmountOfFloors().ToString());
-            Console.WriteLine("");
+            Console.WriteLine(new string('-', 80));
+            Console.WriteLine("Elevators Status:");
+            foreach (var elevator in _elevatorManager.GetAllElevators())
+            {
+                string elevatorDirection = GetDirectionSymbol(elevator.Direction);
+                string currentFloor = elevator.CurrentFloor.ToString().PadRight(2, ' ');
+                string passengerCount = elevator.PassengerList.Count.ToString().PadLeft(2, ' ');
+                string destinations = string.Join(", ", elevator.FloorStopList);
+
+                Console.Write($"[{elevator.Id}]:");
+                Console.Write($" Floor {currentFloor} {elevatorDirection}");
+                Console.Write($" |  Passengers:");
+                Console.Write($" {passengerCount}");
+                Console.Write($" |  Destinations:");
+                Console.Write($" {destinations}");
+                Console.WriteLine("");
+            }
+        }
+
+        private void RefreshElevatorStatus()
+        {
+            Console.SetCursorPosition(0, _cursorElevatorArea);
+            ElevatorStatus();
         }
 
         private void ElevatorCommand()
         {
-            Console.WriteLine("------------------------------------------------------------------");
+            Console.WriteLine(new string('-', 80));
             Console.WriteLine("");
             Console.WriteLine("Press S to Stop application");
             Console.WriteLine("");
             Console.WriteLine("Press A to Add passangers to a floor");
             Console.WriteLine("");
-            Console.WriteLine("------------------------------------------------------------------");
+            Console.WriteLine(new string('-', 80));
             _cursorInputArea = Console.CursorTop;
         }
 
@@ -84,7 +107,7 @@ namespace DVTElevatorChallenge.Presentation
 
         private async void HandleKeyPress(ConsoleKey keyPress)
         {
-
+            Console.SetCursorPosition(0, _cursorInputArea);
             switch (keyPress)
             {
                 case ConsoleKey.S:
@@ -112,6 +135,8 @@ namespace DVTElevatorChallenge.Presentation
             var destinationFloor = AskInt("What floor do you want them to go to?");
 
             _floorManager.AddPassenger(totalPassengers, currentFloor, destinationFloor);
+            var direction = DetermineDIrection(currentFloor, destinationFloor);
+            _elevatorManager.DispatchElevatorToFloor(currentFloor, direction);
 
             ClearConsoleFromRow();
         }
@@ -124,6 +149,18 @@ namespace DVTElevatorChallenge.Presentation
                 Console.Write(new string(' ', Console.WindowWidth));
             }
             Console.SetCursorPosition(0, _cursorInputArea);
+        }
+
+        private Direction DetermineDIrection(int currentFloor, int destinationFloor)
+        {
+            if (currentFloor > destinationFloor)
+            {
+                return Direction.Down;
+            }
+            else
+            {
+                return Direction.Up;
+            }
         }
 
         private int AskInt(string prompt)
@@ -157,6 +194,16 @@ namespace DVTElevatorChallenge.Presentation
 
                 Console.WriteLine("Invalid input. Please enter one of the valid keys.");
             }
+        }
+
+        private string GetDirectionSymbol(Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Up => "↑",
+                Direction.Down => "↓",
+                _ => "-"
+            };
         }
     }
 }

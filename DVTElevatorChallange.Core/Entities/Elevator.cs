@@ -8,7 +8,7 @@ namespace DVTElevatorChallange.Core.Entities
 
         public int Id { get; set; }
         public int CapacityLimit { get; set; } = 10;
-        public int TimeBetweenFloors { get; set; } = 5; //In seconds
+        public int TimeBetweenFloors { get; set; } = 2000; //In ms
         public int CurrentFloor { get; set; } = 0;
         public int? NextStop { get; set; }
         public ElevatorStatus Status { get; set; } = ElevatorStatus.Idle;

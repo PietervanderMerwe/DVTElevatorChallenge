@@ -110,7 +110,7 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
             targetElevator.FloorStopList.Remove(targetElevator.CurrentFloor);
             SetBestNextStop(targetElevator, targetElevator.CurrentFloor);
-            //OnStoppedAtFloor(CurrentFloor);
+            ProcessFloorStop(targetElevator, targetElevator.CurrentFloor);
         }
 
         public void ProcessFloorStop(Elevator elevator, int floorNum)

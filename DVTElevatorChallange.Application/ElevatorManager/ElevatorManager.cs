@@ -13,6 +13,10 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             return true;
         }
 
+        public int GetAmountOfElevators()
+        {
+            return _elevatorList.Count;
+        }
         public void AddPassengerToElevator(Passenger passenger, int elevatorId)
         {
             var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId)

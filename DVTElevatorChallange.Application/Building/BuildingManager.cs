@@ -18,8 +18,8 @@ namespace DVTElevatorChallange.Application.Building
         {
             try
             {
-                _elevatorManager.AddElevators(3);
-                _floorManager.AddFloors(40);
+                _elevatorManager.AddElevators(elevatorCount);
+                _floorManager.AddFloors(floorCount);
                 return true;
             }
             catch (Exception ex)

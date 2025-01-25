@@ -13,6 +13,11 @@ namespace DVTElevatorChallange.Application.FloorManager
             return true;
         }
 
+        public int GetAmountOfFloors()
+        {
+            return _floorList.Count;
+        }
+
         public void ClearUpQueue(int floorNumber)
         {
             var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)

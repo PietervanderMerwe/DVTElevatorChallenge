@@ -1,6 +1,7 @@
 ﻿using DVTElevatorChallange.Application.Building;
 using DVTElevatorChallange.Application.ElevatorManager;
 using DVTElevatorChallange.Application.FloorManager;
+using DVTElevatorChallange.Domain.Enum;
 
 namespace DVTElevatorChallenge.Presentation
 {
@@ -28,6 +29,7 @@ namespace DVTElevatorChallenge.Presentation
         private async Task setupLoop()
         {
             Console.Clear();
+            ElevatorStatus();
             ElevatorCommand();
 
             while (_key != 's')
@@ -40,6 +42,18 @@ namespace DVTElevatorChallenge.Presentation
 
                 await Task.Delay(200);
             }
+        }
+
+        private void ElevatorStatus()
+        {
+            Console.WriteLine("------------------------------------------------------------------");
+            Console.WriteLine("");
+            Console.WriteLine("Elevator statistics");
+            Console.WriteLine("");
+            Console.Write("Elevator Count = " + _elevatorManager.GetAmountOfElevators().ToString());
+            Console.Write(" | ");
+            Console.Write("Floor Count = " + _floorManager.GetAmountOfFloors().ToString());
+            Console.WriteLine("");
         }
 
         private void ElevatorCommand()

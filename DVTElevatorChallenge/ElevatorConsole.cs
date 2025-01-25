@@ -9,6 +9,10 @@ namespace DVTElevatorChallenge.Presentation
         private IBuildingManager _buildingManager;
         private IElevatorManager _elevatorManager;
         private IFloorManager _floorManager;
+
+        private char _key { get; set; }
+        private int _cursorInputArea;
+
         public ElevatorConsole(IBuildingManager buildingManager, IElevatorManager elevatorManager, IFloorManager floorManager)
         {
             _buildingManager = buildingManager;
@@ -18,13 +22,94 @@ namespace DVTElevatorChallenge.Presentation
         public async Task RunAsync(string[] args)
         {
             CreateBuilding();
+            await setupLoop();
+        }
+
+        private async Task setupLoop()
+        {
+            Console.Clear();
+            ElevatorCommand();
+
+            while (_key != 's')
+            {
+                if (Console.KeyAvailable)
+                {
+                    var keyPress = Console.ReadKey(true).Key;
+                    HandleKeyPress(keyPress);
+                }
+
+                await Task.Delay(200);
+            }
+        }
+
+        private void ElevatorCommand()
+        {
+            Console.WriteLine("------------------------------------------------------------------");
+            Console.WriteLine("");
+            Console.WriteLine("Press S to Stop application");
+            Console.WriteLine("");
+            Console.WriteLine("Press A to Add passangers to a floor");
+            Console.WriteLine("");
+            Console.WriteLine("------------------------------------------------------------------");
+            _cursorInputArea = Console.CursorTop;
         }
 
         private void CreateBuilding()
         {
-            var floors = AskInt("Please enter the amount of floors");
-            var elevators = AskInt("Please enter the amount of elevators");
-            _buildingManager.CreeateBuilding(floors, elevators);
+            try
+            {
+                var floors = AskInt("Please enter the amount of floors");
+                var elevators = AskInt("Please enter the amount of elevators");
+                _buildingManager.CreeateBuilding(floors, elevators);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Setup failed with exception: "+ ex.ToString());
+            }
+        }
+
+        private async void HandleKeyPress(ConsoleKey keyPress)
+        {
+
+            switch (keyPress)
+            {
+                case ConsoleKey.S:
+                    ClearConsoleFromRow();
+                    Console.WriteLine("Stopping application...");
+                    _key = 's';
+                    break;
+
+                case ConsoleKey.A:
+                    ClearConsoleFromRow();
+                    await addPassangersToFloor();
+                    break;
+
+                default:
+                    ClearConsoleFromRow();
+                    Console.WriteLine("Invalid key. Press S, A");
+                    break;
+            }
+        }
+
+        private async Task addPassangersToFloor()
+        {
+            var totalPassengers = AskInt("How many passengers do you want to add?");
+            var currentFloor = AskInt("What floor do you want to add them to?");
+            var destinationFloor = AskInt("What floor do you want them to go to?");
+
+            _floorManager.AddPassenger(totalPassengers, currentFloor, destinationFloor);
+
+            ClearConsoleFromRow();
+        }
+
+        private void ClearConsoleFromRow()
+        {
+            for (int row = _cursorInputArea; row < Console.WindowHeight; row++)
+            {
+                Console.SetCursorPosition(0, row);
+                Console.Write(new string(' ', Console.WindowWidth));
+            }
+            Console.SetCursorPosition(0, _cursorInputArea);
         }
 
         private int AskInt(string prompt)
@@ -41,6 +126,22 @@ namespace DVTElevatorChallenge.Presentation
                 }
 
                 Console.WriteLine("Invalid input. Please enter a valid integer.");
+            }
+        }
+
+        private char AskKey(string prompt, params char[] validKeys)
+        {
+            while (true)
+            {
+                Console.WriteLine($"{prompt} (Valid keys: {string.Join(", ", validKeys)})");
+                var input = Console.ReadKey(true).KeyChar;
+
+                if (validKeys.Contains(input))
+                {
+                    return input;
+                }
+
+                Console.WriteLine("Invalid input. Please enter one of the valid keys.");
             }
         }
     }

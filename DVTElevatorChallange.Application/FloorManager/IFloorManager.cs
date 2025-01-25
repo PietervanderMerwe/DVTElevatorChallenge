@@ -8,7 +8,7 @@ namespace DVTElevatorChallange.Application.FloorManager
         bool AddFloors(int floorCount);
         void ClearUpQueue(int floorNumber);
         void ClearDownQueue(int floorNumber);
-        bool AddPassenger(Passenger passenger, int currentFloor);
+        bool AddPassenger(int totalPassengers, int currentFloor, int destinationFloor);
         void AddElevatorToStoppedElevators(Elevator elevator, int floorNumber);
         void RemoveElevatorFromStoppedElevators(Elevator elevator, int floorNumber);
     }

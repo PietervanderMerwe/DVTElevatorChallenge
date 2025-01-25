@@ -29,23 +29,33 @@ namespace DVTElevatorChallange.Application.FloorManager
             targetFloor.DownQueue.Clear();
         }
 
-        public bool AddPassenger(Passenger passenger, int currentFloor)
+        public bool AddPassenger(int totalPassengers, int currentFloor, int destinationFloor)
         {
             var floor = _floorList.FirstOrDefault(f => f.FloorNumber == currentFloor)
                 ?? throw new InvalidOperationException($"Floor with floor number {currentFloor} not found.");
 
-            var direction = GetDirection(currentFloor, passenger.DestinationFloor);
+            var direction = GetDirection(currentFloor, destinationFloor);
 
-            switch (direction)
+            if (direction == Direction.Idle)
             {
-                case Direction.Up:
+                return false;
+            }
+
+            for (int i = 0; i < totalPassengers; i++)
+            {
+                var passenger = new Passenger
+                {
+                    DestinationFloor = destinationFloor
+                };
+
+                if (direction == Direction.Up)
+                {
                     floor.UpQueue.Enqueue(passenger);
-                    break;
-                case Direction.Down:
+                }
+                else if (direction == Direction.Down)
+                {
                     floor.DownQueue.Enqueue(passenger);
-                    break;
-                case Direction.Idle:
-                    return false;
+                }
             }
 
             return true;

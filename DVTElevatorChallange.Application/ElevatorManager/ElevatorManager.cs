@@ -15,12 +15,8 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
         public void AddPassengerToElevator(Passenger passenger, int elevatorId)
         {
-            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId);
-
-            if (targetElevator == null)
-            {
-                throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
-            }
+            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
+                ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
 
             if (targetElevator.PassengerList.Count >= targetElevator.CapacityLimit)
             {
@@ -32,12 +28,8 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
         public void RemovePassenger(Passenger passenger, int elevatorId)
         {
-            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId);
-
-            if (targetElevator == null)
-            {
-                throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
-            }
+            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
+                ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
 
             targetElevator.PassengerList.Remove(passenger);
         }

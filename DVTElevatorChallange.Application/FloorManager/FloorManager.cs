@@ -7,6 +7,12 @@ namespace DVTElevatorChallange.Application.FloorManager
     {
         private readonly List<Floor> _floorList = new();
 
+        public bool AddFloors(int floorCount)
+        {
+            _floorList.AddRange(Enumerable.Range(0, floorCount).Select(_ => new Floor()));
+            return true;
+        }
+
         public void ClearUpQueue(int floorNumber)
         {
             var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)

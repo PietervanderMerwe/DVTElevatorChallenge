@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DVTElevatorChallange.Application\DVTElevatorChallange.Application.csproj" />
+  </ItemGroup>
+
 </Project>

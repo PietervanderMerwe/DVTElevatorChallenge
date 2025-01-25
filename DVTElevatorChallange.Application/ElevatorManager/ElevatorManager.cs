@@ -80,9 +80,31 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             return availableElevators.FirstOrDefault() ?? _elevatorList.FirstOrDefault();
         }
 
+        public async Task MoveToNextStop(int elevatorId)
+        {
+            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
+               ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
 
+            if (targetElevator.NextStop is null)
+            {
+                targetElevator.Status = ElevatorStatus.Idle;
+                targetElevator.Direction = Direction.Idle;
+                return;
+            }
+            targetElevator.Status = ElevatorStatus.Moving;
+            targetElevator.Direction = targetElevator.CurrentFloor < targetElevator.NextStop ? Direction.Up : Direction.Down;
+            while (targetElevator.CurrentFloor != targetElevator.NextStop)
+            {
+                await Task.Delay(targetElevator.TimeBetweenFloors);
+                targetElevator.CurrentFloor = targetElevator.Direction == Direction.Up ? targetElevator.CurrentFloor + 1 : targetElevator.CurrentFloor - 1;
+            }
 
-        private bool IsMovingTowardFloor(Elevator elevator, int floor)
+            targetElevator.FloorStopList.Remove(targetElevator.CurrentFloor);
+            //SetBestNextStop();
+            //OnStoppedAtFloor(CurrentFloor);
+        }
+
+        public bool IsMovingTowardFloor(Elevator elevator, int floor)
         {
             if (elevator.Direction == Direction.Up && floor > elevator.CurrentFloor)
                 return true;

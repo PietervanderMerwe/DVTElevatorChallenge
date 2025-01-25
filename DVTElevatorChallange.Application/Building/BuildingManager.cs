@@ -1,24 +1,31 @@
 ﻿using DVTElevatorChallange.Application.ElevatorManager;
+using DVTElevatorChallange.Application.FloorManager;
 
 namespace DVTElevatorChallange.Application.Building
 {
     public class BuildingManager : IBuildingManager
     {
         private IElevatorManager _elevatorManager;
+        private IFloorManager _floorManager;
 
-        public BuildingManager(IElevatorManager elevatorManager)
+        public BuildingManager(IElevatorManager elevatorManager, IFloorManager floorManager)
         {
             _elevatorManager = elevatorManager;
+            _floorManager = floorManager;
         }
 
-        public void SetElevators()
+        public bool CreeateBuilding(int floorCount, int elevatorCount)
         {
-            _elevatorManager.AddElevators(3);
-        }
-
-        public void Setloors()
-        {
-
+            try
+            {
+                _elevatorManager.AddElevators(3);
+                _floorManager.AddFloors(40);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

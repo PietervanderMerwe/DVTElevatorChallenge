@@ -2,9 +2,16 @@
 {
     public class Floor
     {
+        private static int _nextFloor = 0;
+
         public int FloorNumber { get; set; }
-        public Queue<Passenger> UpQueue { get; set; }
-        public Queue<Passenger> DownQueue { get; set; }
-        public List<Elevator> StoppedElevators { get; set; }
+        public Queue<Passenger> UpQueue { get; set; } = new Queue<Passenger>();
+        public Queue<Passenger> DownQueue { get; set; } = new Queue<Passenger>();
+        public List<Elevator> StoppedElevators { get; set; } = new List<Elevator>();
+
+        public Floor()
+        {
+            FloorNumber = _nextFloor++;
+        }
     }
 }

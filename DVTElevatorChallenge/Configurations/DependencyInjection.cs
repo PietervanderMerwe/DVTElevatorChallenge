@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DVTElevatorChallange.Application.Building;
+using DVTElevatorChallange.Application.ElevatorManager;
+using DVTElevatorChallange.Application.FloorManager;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DVTElevatorChallenge.Presentation.Configurations
 {
@@ -7,8 +10,11 @@ namespace DVTElevatorChallenge.Presentation.Configurations
         public ServiceProvider SetupDI()
         {
             return new ServiceCollection()
-            .AddTransient<ElevatorConsole>()
-            .BuildServiceProvider();
+                .AddSingleton<IBuildingManager, BuildingManager>()
+                .AddSingleton<IElevatorManager, ElevatorManager>()
+                .AddSingleton<IFloorManager, FloorManager>()
+                .AddTransient<ElevatorConsole>()
+                .BuildServiceProvider();
         }
     }
 }

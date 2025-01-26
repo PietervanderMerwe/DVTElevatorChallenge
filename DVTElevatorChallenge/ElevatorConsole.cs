@@ -138,7 +138,7 @@ namespace DVTElevatorChallenge.Presentation
             var destinationFloor = AskInt("What floor do you want them to go to?");
 
             _floorManager.AddPassenger(totalPassengers, currentFloor, destinationFloor);
-            var direction = DetermineDIrection(currentFloor, destinationFloor);
+            var direction = DetermineDirection(currentFloor, destinationFloor);
             _elevatorManager.DispatchElevatorToFloor(currentFloor, direction);
 
             ClearConsoleFromRow();
@@ -154,7 +154,7 @@ namespace DVTElevatorChallenge.Presentation
             Console.SetCursorPosition(0, _cursorInputArea);
         }
 
-        private Direction DetermineDIrection(int currentFloor, int destinationFloor)
+        private Direction DetermineDirection(int currentFloor, int destinationFloor)
         {
             if (currentFloor > destinationFloor)
             {

@@ -13,11 +13,6 @@ namespace DVTElevatorChallange.Application.FloorManager
             return true;
         }
 
-        public int GetAmountOfFloors()
-        {
-            return _floorList.Count;
-        }
-
         public int GetRemainingQueueCount(int floorNumber, Direction direction)
         {
             var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
@@ -32,22 +27,6 @@ namespace DVTElevatorChallange.Application.FloorManager
                 return targetFloor.DownQueue.Count;
             }
             return 0;
-        }
-
-        public void ClearUpQueue(int floorNumber)
-        {
-            var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
-                ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
-
-            targetFloor.UpQueue.Clear();
-        }
-
-        public void ClearDownQueue(int floorNumber)
-        {
-            var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
-                ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
-          
-            targetFloor.DownQueue.Clear();
         }
 
         public List<Passenger> LoadDownQueuePassengers(int floorNumber, int passengerAmount)

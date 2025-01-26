@@ -94,6 +94,8 @@ namespace DVTElevatorChallange.Application.ElevatorManager
                 ? _floorManager.LoadUpQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count)
                 : _floorManager.LoadDownQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count);
 
+            Console.WriteLine("Passanger in queue: "+ passengersToLoad.Count);
+
             foreach (var passenger in passengersToLoad)
             {
                 AddPassengerToElevator(passenger, elevator);
@@ -143,6 +145,8 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
             elevator.NextStop = newFloor;
             elevator.Direction = newFloor > elevator.CurrentFloor ? Direction.Up : Direction.Down;
+
+            Console.WriteLine("Next stop: " + elevator.NextStop +"Direction: "+ elevator.Direction);
 
         }
 

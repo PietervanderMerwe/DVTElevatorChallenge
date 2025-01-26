@@ -1,6 +1,7 @@
 ﻿using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Core.Entities;
 using DVTElevatorChallange.Domain.Enum;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace DVTElevatorChallange.Application.ElevatorManager
@@ -22,10 +23,7 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             return true;
         }
 
-        public List<Elevator> GetAllElevators()
-        {
-            return _elevatorList;
-        }
+        public List<Elevator> GetAllElevators() => _elevatorList;
 
         public async Task MoveAllElevatorsToNextStopsAsync()
         {
@@ -50,75 +48,37 @@ namespace DVTElevatorChallange.Application.ElevatorManager
                 .ToList();
 
             var bestElevator = availableElevators
-                .FirstOrDefault(e => e.CurrentFloor == floorNum &&
-                                     (e.Status == ElevatorStatus.Idle || e.Status == ElevatorStatus.Stopped));
-
-            if (bestElevator != null)
-            {
-                return bestElevator;
-            }
-
-            bestElevator = availableElevators
-                .Where(e => IsMovingTowardFloor(e, floorNum) && e.Direction == direction ||
-                            (e.Status == ElevatorStatus.Idle && !e.FloorStopList.Any()))
-                .OrderBy(e => Math.Abs(e.CurrentFloor - floorNum))
+                .OrderBy(e => e.Status == ElevatorStatus.Idle ? 0 : 1)
+                .ThenBy(e => Math.Abs(e.CurrentFloor - floorNum))
                 .ThenBy(e => e.Direction == direction ? 0 : 1)
-                .ThenBy(e => e.Status == ElevatorStatus.Idle ? 0 : 1)
-                .FirstOrDefault();
+                .FirstOrDefault(e => e.Status == ElevatorStatus.Idle || IsMovingTowardFloor(e, floorNum));
 
-            if (bestElevator != null)
-            {
-                return bestElevator;
-            }
-
-            bestElevator = availableElevators
-                .OrderBy(e =>
-                {
-                    var turningDistance = e.Direction == Direction.Up
-                        ? (e.FloorStopList.Max - e.CurrentFloor) + Math.Abs(e.FloorStopList.Max - floorNum)
-                        : (e.CurrentFloor - e.FloorStopList.Min) + Math.Abs(floorNum - e.FloorStopList.Min);
-                    return turningDistance;
-                })
-                .FirstOrDefault();
-
-            if (bestElevator != null)
-            {
-                return bestElevator;
-            }
-
-            return availableElevators.FirstOrDefault() ?? _elevatorList.FirstOrDefault();
+            return bestElevator ?? availableElevators.FirstOrDefault();
         }
 
         private async Task MoveToNextStop(int elevatorId)
         {
-            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
-               ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
+            var elevator = GetElevatorById(elevatorId);
 
-            if (targetElevator.NextStop is null)
+            if (elevator.NextStop == null)
             {
-                targetElevator.Status = ElevatorStatus.Idle;
-                targetElevator.Direction = Direction.Idle;
+                elevator.Status = ElevatorStatus.Idle;
+                elevator.Direction = Direction.Idle;
                 return;
             }
-            targetElevator.Status = ElevatorStatus.Moving;
-            targetElevator.Direction = targetElevator.CurrentFloor < targetElevator.NextStop ? Direction.Up : Direction.Down;
-            while (targetElevator.CurrentFloor != targetElevator.NextStop)
-            {
-                await Task.Delay(targetElevator.TimeBetweenFloors);
-                targetElevator.CurrentFloor = targetElevator.Direction == Direction.Up ? targetElevator.CurrentFloor + 1 : targetElevator.CurrentFloor - 1;
-            }
 
-            targetElevator.FloorStopList.Remove(targetElevator.CurrentFloor);
-            ProcessFloorStop(targetElevator, targetElevator.CurrentFloor);            
+            elevator.Status = ElevatorStatus.Moving;
+            elevator.Direction = elevator.CurrentFloor < elevator.NextStop ? Direction.Up : Direction.Down;
+
+            await MoveElevatorToFloor(elevator, elevator.NextStop.Value);
+            elevator.FloorStopList.Remove(elevator.CurrentFloor);
+
+            ProcessFloorStop(elevator, elevator.CurrentFloor);
         }
 
         public void ProcessFloorStop(Elevator elevator, int floorNum)
         {
             _floorManager.AddElevatorToStoppedElevators(elevator, floorNum);
-
-            elevator.FloorStopList.Remove(floorNum);
-
-            var direction = _floorManager.DetermineDirection(elevator, floorNum);
 
             var passengersToUnload = elevator.PassengerList
                 .Where(p => p.DestinationFloor == floorNum)
@@ -129,137 +89,78 @@ namespace DVTElevatorChallange.Application.ElevatorManager
                 RemovePassenger(passenger, elevator.Id);
             }
 
+            var direction = _floorManager.DetermineDirection(elevator, floorNum);
             var passengersToLoad = direction == Direction.Up
                 ? _floorManager.LoadUpQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count)
                 : _floorManager.LoadDownQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count);
 
-            if(passengersToLoad.Count > 0)
+            foreach (var passenger in passengersToLoad)
             {
-                foreach (var passenger in passengersToLoad)
-                {
-                    AddPassengerToElevator(passenger, elevator);
-                }
-
-                AddFloorStop(elevator, passengersToLoad.FirstOrDefault().DestinationFloor);
+                AddPassengerToElevator(passenger, elevator);
             }
-            
-            SetBestNextStop(elevator, floorNum);
+
+            if (passengersToLoad.Any())
+            {
+                AddFloorStop(elevator, passengersToLoad.First().DestinationFloor);
+            }
+            else
+            {
+                elevator.NextStop = null;
+            }
 
             _floorManager.RemoveElevatorFromStoppedElevators(elevator, floorNum);
 
-            var remainingPassengers = direction == Direction.Up
-                ? _floorManager.GetRemainingUpQueueCount(floorNum)
-                : _floorManager.GetRemainingDownQueueCount(floorNum);
-
-            if (remainingPassengers > 0)
+            if (_floorManager.GetRemainingQueueCount(floorNum, direction) > 0)
             {
                 DispatchElevatorToFloor(floorNum, direction);
             }
         }
 
-        private void SetBestNextStop(Elevator elevator, int floorNum)
-        {
-            var upStops = elevator.FloorStopList.Where(x => x > floorNum);
-            var downStops = elevator.FloorStopList.Where(x => x < floorNum);
-
-            if (elevator.Direction == Direction.Up)
-            {
-                if (upStops.Any())
-                    elevator.Direction = Direction.Up;
-                else if (downStops.Any())
-                    elevator.Direction = Direction.Down;
-            }
-            else if (elevator.Direction == Direction.Down)
-            {
-                if (downStops.Any())
-                    elevator.Direction = Direction.Down;
-                else if (upStops.Any())
-                    elevator.Direction = Direction.Up;
-            }
-            else if (elevator.Direction == Direction.Idle)
-            {
-                if (upStops.Any())
-                    elevator.Direction = Direction.Up;
-                else if (downStops.Any())
-                    elevator.Direction = Direction.Down;
-            }
-
-            elevator.Direction = Direction.Idle;
-        }
-
         public void AddPassengerToElevator(Passenger passenger, Elevator elevator)
         {
-            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevator.Id)
-                ?? throw new InvalidOperationException($"Elevator with ID {elevator.Id} not found.");
-
-            if (targetElevator.PassengerList.Count >= targetElevator.CapacityLimit)
+            if (elevator.PassengerList.Count >= elevator.CapacityLimit)
             {
                 throw new InvalidOperationException("Elevator is at full capacity.");
             }
 
-            targetElevator.PassengerList.Add(passenger);
+            elevator.PassengerList.Add(passenger);
         }
 
         public void RemovePassenger(Passenger passenger, int elevatorId)
         {
-            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
-                ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
-
-            targetElevator.PassengerList.Remove(passenger);
-        }
-
-        public bool IsAnyElevatorMoving()
-        {
-            return _elevatorList.Any(e => e.Status == ElevatorStatus.Moving);
-        }
-
-        private bool IsMovingTowardFloor(Elevator elevator, int floor)
-        {
-            if (elevator.Direction == Direction.Up && floor > elevator.CurrentFloor)
-                return true;
-
-            if (elevator.Direction == Direction.Down && floor < elevator.CurrentFloor)
-                return true;
-
-            return false;
+            var elevator = GetElevatorById(elevatorId);
+            elevator.PassengerList.Remove(passenger);
         }
 
         public void AddFloorStop(Elevator elevator, int newFloor)
         {
-            if (elevator.FloorStopList.Contains(newFloor))
+            if (elevator.FloorStopList.Contains(newFloor) || newFloor <= 0)
             {
                 return;
             }
 
             elevator.FloorStopList.Add(newFloor);
 
-            if (elevator.Direction == Direction.Idle)
-            {
-                UpdateNextStopForIdleElevator(elevator, newFloor);
-                return;
-            }
+            elevator.NextStop = newFloor;
+            elevator.Direction = newFloor > elevator.CurrentFloor ? Direction.Up : Direction.Down;
 
-            UpdateNextStopForMovingElevator(elevator, newFloor);
         }
 
-        private void UpdateNextStopForIdleElevator(Elevator elevator, int newFloor)
+        private async Task MoveElevatorToFloor(Elevator elevator, int targetFloor)
         {
-            if (elevator.NextStop is null || Math.Abs(elevator.CurrentFloor - newFloor) < Math.Abs(elevator.CurrentFloor - elevator.NextStop.Value))
+            while (elevator.CurrentFloor != targetFloor)
             {
-                elevator.NextStop = newFloor;
-                elevator.Direction = elevator.CurrentFloor < newFloor ? Direction.Up : Direction.Down;
+                await Task.Delay(elevator.TimeBetweenFloors);
+                elevator.CurrentFloor += elevator.Direction == Direction.Up ? 1 : -1;
             }
         }
 
-        private void UpdateNextStopForMovingElevator(Elevator elevator, int newFloor)
-        {
-            var newFloorDir = elevator.CurrentFloor < newFloor ? Direction.Up : Direction.Down;
+        private bool IsMovingTowardFloor(Elevator elevator, int floor) =>
+            (elevator.Direction == Direction.Up && floor > elevator.CurrentFloor) ||
+            (elevator.Direction == Direction.Down && floor < elevator.CurrentFloor);
 
-            if ((elevator.Direction == Direction.Up && newFloorDir == Direction.Up && newFloor < elevator.NextStop) ||
-                (elevator.Direction == Direction.Down && newFloorDir == Direction.Down && newFloor > elevator.NextStop))
-            {
-                elevator.NextStop = newFloor;
-            }
-        }
+        private Elevator GetElevatorById(int elevatorId) =>
+            _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
+            ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
     }
 }

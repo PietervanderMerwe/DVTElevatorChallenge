@@ -13,7 +13,5 @@ namespace DVTElevatorChallange.Application.ElevatorManager
         void DispatchElevatorToFloor(int floorNum, Direction direction);
         void ProcessFloorStop(Elevator elevator, int floorNum);
 
-        bool IsAnyElevatorMoving();
-
     }
 }

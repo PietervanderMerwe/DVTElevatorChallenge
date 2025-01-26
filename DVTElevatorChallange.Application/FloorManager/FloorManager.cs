@@ -18,20 +18,20 @@ namespace DVTElevatorChallange.Application.FloorManager
             return _floorList.Count;
         }
 
-        public int GetRemainingUpQueueCount(int floorNumber)
+        public int GetRemainingQueueCount(int floorNumber, Direction direction)
         {
             var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
                 ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
 
-            return targetFloor.UpQueue.Count;
-        }
-
-        public int GetRemainingDownQueueCount(int floorNumber)
-        {
-            var targetFloor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
-                ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
-
-            return targetFloor.DownQueue.Count;
+            if (direction == Direction.Up)
+            {
+                return targetFloor.UpQueue.Count;
+            }
+            else if(direction == Direction.Down)
+            {
+                return targetFloor.DownQueue.Count;
+            }
+            return 0;
         }
 
         public void ClearUpQueue(int floorNumber)

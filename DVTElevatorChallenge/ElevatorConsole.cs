@@ -51,10 +51,8 @@ namespace DVTElevatorChallenge.Presentation
                     movingTask = _elevatorManager.MoveAllElevatorsToNextStopsAsync();
                 }
 
-                if (_elevatorManager.IsAnyElevatorMoving())
-                {
-                    RefreshElevatorStatus();
-                }
+                RefreshElevatorStatus();
+
             }
         }
 
@@ -62,6 +60,7 @@ namespace DVTElevatorChallenge.Presentation
         {
             Console.WriteLine(new string('-', 80));
             Console.WriteLine("Elevators Status:");
+
             foreach (var elevator in _elevatorManager.GetAllElevators())
             {
                 string elevatorDirection = GetDirectionSymbol(elevator.Direction);
@@ -69,12 +68,9 @@ namespace DVTElevatorChallenge.Presentation
                 string passengerCount = elevator.PassengerList.Count.ToString().PadLeft(2, ' ');
                 string destinations = string.Join(", ", elevator.FloorStopList);
 
-                Console.Write($"[{elevator.Id}]:");
-                Console.Write($" Floor {currentFloor} {elevatorDirection}");
-                Console.Write($" |  Passengers:");
-                Console.Write($" {passengerCount}");
-                Console.Write($" |  Destinations:");
-                Console.Write($" {destinations}");
+                string statusLine = $"[{elevator.Id}]: Floor {currentFloor} {elevatorDirection} | Passengers: {passengerCount} | Destinations: {destinations}";
+                int consoleWidth = Console.WindowWidth;
+                Console.Write(statusLine.PadRight(consoleWidth));
                 Console.WriteLine("");
             }
         }

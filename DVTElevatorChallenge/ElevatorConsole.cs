@@ -13,7 +13,6 @@ namespace DVTElevatorChallenge.Presentation
 
         private char _key { get; set; }
         private int _cursorInputArea;
-
         private int _cursorElevatorArea;
         public ElevatorConsole(IBuildingManager buildingManager, IElevatorManager elevatorManager, IFloorManager floorManager)
         {

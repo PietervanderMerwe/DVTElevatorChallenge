@@ -102,6 +102,8 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             else
             {
                 elevator.NextStop = null;
+                elevator.Status = ElevatorStatus.Idle;
+                elevator.Direction = Direction.Idle;
             }
 
             _floorManager.RemoveElevatorFromStoppedElevators(elevator, floorNum);
@@ -130,7 +132,7 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
         public void AddFloorStop(Elevator elevator, int newFloor)
         {
-            if (elevator.FloorStopList.Contains(newFloor) || newFloor <= 0)
+            if (elevator.FloorStopList.Contains(newFloor) || newFloor < 0)
             {
                 return;
             }
@@ -139,8 +141,6 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
             elevator.NextStop = newFloor;
             elevator.Direction = newFloor > elevator.CurrentFloor ? Direction.Up : Direction.Down;
-
-            Console.WriteLine("Next stop: " + elevator.NextStop +"Direction: "+ elevator.Direction);
 
         }
 

@@ -1,8 +1,6 @@
 ﻿using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Core.Entities;
 using DVTElevatorChallange.Domain.Enum;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace DVTElevatorChallange.Application.ElevatorManager
 {
@@ -90,11 +88,7 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             }
 
             var direction = _floorManager.DetermineDirection(elevator, floorNum);
-            var passengersToLoad = direction == Direction.Up
-                ? _floorManager.LoadUpQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count)
-                : _floorManager.LoadDownQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count);
-
-            Console.WriteLine("Passanger in queue: "+ passengersToLoad.Count);
+            var passengersToLoad = _floorManager.LoadQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count, direction);
 
             foreach (var passenger in passengersToLoad)
             {

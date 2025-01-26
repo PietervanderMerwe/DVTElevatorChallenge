@@ -34,6 +34,8 @@ namespace DVTElevatorChallenge.Presentation
             ElevatorStatus();
             ElevatorCommand();
 
+            Task movingTask = null;
+
             while (_key != 's')
             {
                 if (Console.KeyAvailable)
@@ -43,7 +45,11 @@ namespace DVTElevatorChallenge.Presentation
                 }
 
                 await Task.Delay(200);
-                await _elevatorManager.MoveAllElevatorsToNextStopsAsync();
+
+                if (movingTask == null || movingTask.IsCompleted)
+                {
+                    movingTask = _elevatorManager.MoveAllElevatorsToNextStopsAsync();
+                }
 
                 if (_elevatorManager.IsAnyElevatorMoving())
                 {
@@ -77,6 +83,7 @@ namespace DVTElevatorChallenge.Presentation
         {
             Console.SetCursorPosition(0, _cursorElevatorArea);
             ElevatorStatus();
+            Console.SetCursorPosition(0, _cursorInputArea);
         }
 
         private void ElevatorCommand()
@@ -180,28 +187,12 @@ namespace DVTElevatorChallenge.Presentation
             }
         }
 
-        private char AskKey(string prompt, params char[] validKeys)
-        {
-            while (true)
-            {
-                Console.WriteLine($"{prompt} (Valid keys: {string.Join(", ", validKeys)})");
-                var input = Console.ReadKey(true).KeyChar;
-
-                if (validKeys.Contains(input))
-                {
-                    return input;
-                }
-
-                Console.WriteLine("Invalid input. Please enter one of the valid keys.");
-            }
-        }
-
         private string GetDirectionSymbol(Direction direction)
         {
             return direction switch
             {
-                Direction.Up => "↑",
-                Direction.Down => "↓",
+                Direction.Up => "UP",
+                Direction.Down => "DOWN",
                 _ => "-"
             };
         }

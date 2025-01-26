@@ -109,8 +109,7 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             }
 
             targetElevator.FloorStopList.Remove(targetElevator.CurrentFloor);
-            SetBestNextStop(targetElevator, targetElevator.CurrentFloor);
-            ProcessFloorStop(targetElevator, targetElevator.CurrentFloor);
+            ProcessFloorStop(targetElevator, targetElevator.CurrentFloor);            
         }
 
         public void ProcessFloorStop(Elevator elevator, int floorNum)
@@ -134,11 +133,16 @@ namespace DVTElevatorChallange.Application.ElevatorManager
                 ? _floorManager.LoadUpQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count)
                 : _floorManager.LoadDownQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count);
 
-            foreach (var passenger in passengersToLoad)
+            if(passengersToLoad.Count > 0)
             {
-                AddPassengerToElevator(passenger, elevator.Id);
-            }
+                foreach (var passenger in passengersToLoad)
+                {
+                    AddPassengerToElevator(passenger, elevator);
+                }
 
+                AddFloorStop(elevator, passengersToLoad.FirstOrDefault().DestinationFloor);
+            }
+            
             SetBestNextStop(elevator, floorNum);
 
             _floorManager.RemoveElevatorFromStoppedElevators(elevator, floorNum);
@@ -183,10 +187,10 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             elevator.Direction = Direction.Idle;
         }
 
-        public void AddPassengerToElevator(Passenger passenger, int elevatorId)
+        public void AddPassengerToElevator(Passenger passenger, Elevator elevator)
         {
-            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
-                ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
+            var targetElevator = _elevatorList.FirstOrDefault(e => e.Id == elevator.Id)
+                ?? throw new InvalidOperationException($"Elevator with ID {elevator.Id} not found.");
 
             if (targetElevator.PassengerList.Count >= targetElevator.CapacityLimit)
             {

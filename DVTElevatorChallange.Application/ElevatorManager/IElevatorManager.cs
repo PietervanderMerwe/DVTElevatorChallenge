@@ -7,7 +7,7 @@ namespace DVTElevatorChallange.Application.ElevatorManager
     {
         bool AddElevators(int elevatorCount);
         List<Elevator> GetAllElevators();
-        Task MoveAllElevatorsToNextStopsAsync();
+        Task MoveAllElevatorsToNextStopsAsync(CancellationToken cancellationToken);
         void AddPassengerToElevator(Passenger passenger, Elevator elevator);
         void RemovePassenger(Passenger passenger, int elevatorId);
         void DispatchElevatorToFloor(int floorNum, Direction direction);

@@ -2,6 +2,7 @@
 using DVTElevatorChallange.Application.ElevatorManager;
 using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Domain.Enum;
+using System.Threading;
 
 namespace DVTElevatorChallenge.Presentation
 {
@@ -14,6 +15,9 @@ namespace DVTElevatorChallenge.Presentation
         private char _key { get; set; }
         private int _cursorInputArea;
         private int _cursorElevatorArea;
+        private Task _movingTask = null;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
         public ElevatorConsole(IBuildingManager buildingManager, IElevatorManager elevatorManager, IFloorManager floorManager)
         {
             _buildingManager = buildingManager;
@@ -33,7 +37,7 @@ namespace DVTElevatorChallenge.Presentation
             ElevatorStatus();
             ElevatorCommand();
 
-            Task movingTask = null;
+            
 
             while (_key != 's')
             {
@@ -45,9 +49,12 @@ namespace DVTElevatorChallenge.Presentation
 
                 await Task.Delay(200);
 
-                if (movingTask == null || movingTask.IsCompleted)
+                if (_movingTask == null || _movingTask.IsCompleted)
                 {
-                    movingTask = _elevatorManager.MoveAllElevatorsToNextStopsAsync();
+                    _cancellationTokenSource.Cancel();
+                    _cancellationTokenSource = new CancellationTokenSource();
+
+                    _movingTask = _elevatorManager.MoveAllElevatorsToNextStopsAsync(_cancellationTokenSource.Token);
                 }
 
                 RefreshElevatorStatus();
@@ -140,6 +147,7 @@ namespace DVTElevatorChallenge.Presentation
 
             _floorManager.AddPassenger(totalPassengers, currentFloor, destinationFloor);
             var direction = DetermineDirection(currentFloor, destinationFloor);
+            _cancellationTokenSource.Cancel();
             _elevatorManager.DispatchElevatorToFloor(currentFloor, direction);
 
             ClearConsoleFromRow();

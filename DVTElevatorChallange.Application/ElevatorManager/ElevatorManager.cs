@@ -26,13 +26,20 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
         public List<Elevator> GetAllElevators() => _elevatorList;
 
-        public async Task MoveAllElevatorsToNextStopsAsync()
+        public async Task MoveAllElevatorsToNextStopsAsync(CancellationToken cancellationToken)
         {
             var tasks = _elevatorList
                 .Where(e => e.NextStop != null)
-                .Select(e => MoveToNextStop(e.Id));
+                .Select(e => MoveToNextStop(e.Id, cancellationToken));
 
-            await Task.WhenAll(tasks);
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("\"Elevator movement operations were canceled.");
+            }
         }
 
         public void DispatchElevatorToFloor(int floorNum, Direction direction)
@@ -63,7 +70,7 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             return bestElevator ?? availableElevators.FirstOrDefault();
         }
 
-        private async Task MoveToNextStop(int elevatorId)
+        private async Task MoveToNextStop(int elevatorId, CancellationToken cancellationToken)
         {
             var elevator = GetElevatorById(elevatorId);
 
@@ -83,10 +90,20 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             elevator.Status = ElevatorStatus.Moving;
             elevator.Direction = elevator.CurrentFloor < elevator.NextStop ? Direction.Up : Direction.Down;
 
-            await MoveElevatorToFloor(elevator, elevator.NextStop.Value);
-            elevator.FloorStopList.Remove(elevator.CurrentFloor);
+            try
+            {
+                await MoveElevatorToFloor(elevator, elevator.NextStop.Value, cancellationToken);
 
-            ProcessFloorStop(elevator, elevator.CurrentFloor);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                elevator.FloorStopList.Remove(elevator.NextStop.Value);
+
+                ProcessFloorStop(elevator, elevator.NextStop.Value);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation($"Move to next stop for elevator {elevator.Id} was canceled.");
+            }
         }
 
         public void ProcessFloorStop(Elevator elevator, int floorNum)
@@ -160,11 +177,14 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
         }
 
-        private async Task MoveElevatorToFloor(Elevator elevator, int targetFloor)
+        private async Task MoveElevatorToFloor(Elevator elevator, int targetFloor, CancellationToken cancellationToken)
         {
             while (elevator.CurrentFloor != targetFloor)
             {
-                await Task.Delay(elevator.TimeBetweenFloors);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await Task.Delay(elevator.TimeBetweenFloors, cancellationToken);
+
                 elevator.CurrentFloor += elevator.Direction == Direction.Up ? 1 : -1;
             }
         }

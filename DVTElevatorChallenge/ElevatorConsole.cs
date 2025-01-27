@@ -132,9 +132,11 @@ namespace DVTElevatorChallenge.Presentation
 
         private async Task addPassangersToFloor()
         {
-            var totalPassengers = AskInt("How many passengers do you want to add?");
-            var currentFloor = AskInt("What floor do you want to add them to?");
-            var destinationFloor = AskInt("What floor do you want them to go to?");
+            var floorLimit = _floorManager.GetTotalFloors();
+
+            var totalPassengers = AskInt("How many passengers do you want to add?", floorLimit);
+            var currentFloor = AskInt("What floor do you want to add them to?", floorLimit);
+            var destinationFloor = AskInt("What floor do you want them to go to?", floorLimit);
 
             _floorManager.AddPassenger(totalPassengers, currentFloor, destinationFloor);
             var direction = DetermineDirection(currentFloor, destinationFloor);
@@ -165,20 +167,24 @@ namespace DVTElevatorChallenge.Presentation
             }
         }
 
-        private int AskInt(string prompt)
+        private int AskInt(string prompt, int? limit = null)
         {
             int value;
             while (true)
             {
-                Console.WriteLine(prompt);
+                Console.WriteLine(limit.HasValue
+                    ? $"{prompt} (0 to {limit.Value - 1}):"
+                    : prompt);
                 var input = Console.ReadLine();
 
-                if (int.TryParse(input, out value))
+                if (int.TryParse(input, out value) && (!limit.HasValue || (value >= 0 && value < limit.Value)))
                 {
                     return value;
                 }
 
-                Console.WriteLine("Invalid input. Please enter a valid integer.");
+                Console.WriteLine(limit.HasValue
+                    ? $"Invalid input. Please enter an integer between 0 and {limit.Value - 1}."
+                    : "Invalid input. Please enter a valid integer.");
             }
         }
 

@@ -6,6 +6,7 @@ namespace DVTElevatorChallange.Application.FloorManager
     public interface IFloorManager
     {
         bool AddFloors(int floorCount);
+        int GetTotalFloors();
         int GetRemainingQueueCount(int floorNumber, Direction direction);
         void AddPassenger(int totalPassengers, int currentFloor, int destinationFloor);
         void AddElevatorToStoppedElevators(Elevator elevator, int floorNumber);

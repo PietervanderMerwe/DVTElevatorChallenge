@@ -25,6 +25,17 @@ namespace DVTElevatorChallange.Tests
         }
 
         [Fact]
+        public void GetTotalFloors_ShouldReturnCorrectFloorCount()
+        {
+            var floorManager = new FloorManager();
+
+            floorManager.AddFloors(5);
+            var totalFloors = floorManager.GetTotalFloors();
+
+            Assert.Equal(5, totalFloors);
+        }
+
+        [Fact]
         public void AddPassenger_ShouldAddPassengerToCorrectQueue()
         {
             _floorManager.AddFloors(3);

@@ -13,6 +13,8 @@ namespace DVTElevatorChallange.Application.FloorManager
             return true;
         }
 
+        public int GetTotalFloors() => _floorList.Count;
+
         public int GetRemainingQueueCount(int floorNumber, Direction direction)
         {
             var targetFloor = GetFloorByNumber(floorNumber);

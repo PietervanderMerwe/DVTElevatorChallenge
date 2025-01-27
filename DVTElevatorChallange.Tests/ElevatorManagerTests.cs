@@ -2,6 +2,7 @@
 using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Core.Entities;
 using DVTElevatorChallange.Domain.Enum;
+using DVTElevatorChallange.Domain.Interface;
 using Moq;
 using Xunit;
 
@@ -10,12 +11,14 @@ namespace DVTElevatorChallange.Tests
     public class ElevatorManagerTests
     {
         private readonly Mock<IFloorManager> _floorManagerMock;
+        private readonly Mock<ILoggerService> _loggerServiceMock;
         private readonly ElevatorManager _elevatorManager;
 
         public ElevatorManagerTests()
         {
             _floorManagerMock = new Mock<IFloorManager>();
-            _elevatorManager = new ElevatorManager(_floorManagerMock.Object);
+            _loggerServiceMock = new Mock<ILoggerService>();
+            _elevatorManager = new ElevatorManager(_floorManagerMock.Object, _loggerServiceMock.Object);
         }
 
         [Fact]
@@ -114,15 +117,21 @@ namespace DVTElevatorChallange.Tests
         }
 
         [Fact]
-        public void AddPassengerToElevator_ShouldThrowExceptionIfElevatorIsFull()
+        public void AddPassengerToElevator_ShouldLogMessageIfElevatorIsFull()
         {
             _elevatorManager.AddElevators(1);
+
             var elevator = _elevatorManager.GetAllElevators().First();
             elevator.CapacityLimit = 1;
             elevator.PassengerList.Add(new Passenger { DestinationFloor = 5 });
 
-            Assert.Throws<InvalidOperationException>(() =>
-                _elevatorManager.AddPassengerToElevator(new Passenger { DestinationFloor = 10 }, elevator));
+            _elevatorManager.AddPassengerToElevator(new Passenger { DestinationFloor = 10 }, elevator);
+
+            _loggerServiceMock.Verify(
+                x => x.LogInformation($"Elevator {elevator.Id} is at full capacity."),
+                Times.Once
+            );
+            Assert.Single(elevator.PassengerList);
         }
 
         [Fact]

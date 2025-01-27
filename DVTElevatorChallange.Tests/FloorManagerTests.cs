@@ -1,6 +1,8 @@
 ﻿using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Core.Entities;
 using DVTElevatorChallange.Domain.Enum;
+using DVTElevatorChallange.Domain.Interface;
+using Moq;
 using Xunit;
 
 namespace DVTElevatorChallange.Tests
@@ -8,10 +10,12 @@ namespace DVTElevatorChallange.Tests
     public class FloorManagerTests
     {
         private readonly FloorManager _floorManager;
+        private readonly Mock<ILoggerService> _loggerServiceMock;
 
         public FloorManagerTests()
         {
-            _floorManager = new FloorManager();
+            _loggerServiceMock = new Mock<ILoggerService>();
+            _floorManager = new FloorManager(_loggerServiceMock.Object);
         }
 
         [Fact]
@@ -27,10 +31,8 @@ namespace DVTElevatorChallange.Tests
         [Fact]
         public void GetTotalFloors_ShouldReturnCorrectFloorCount()
         {
-            var floorManager = new FloorManager();
-
-            floorManager.AddFloors(5);
-            var totalFloors = floorManager.GetTotalFloors();
+            _floorManager.AddFloors(5);
+            var totalFloors = _floorManager.GetTotalFloors();
 
             Assert.Equal(5, totalFloors);
         }
@@ -109,7 +111,7 @@ namespace DVTElevatorChallange.Tests
             _floorManager.AddFloors(3);
             int invalidFloor = 10;
 
-            Assert.Throws<InvalidOperationException>(() => _floorManager.GetRemainingQueueCount(invalidFloor, Direction.Up));
+            Assert.Equal(0, _floorManager.GetRemainingQueueCount(invalidFloor, Direction.Up));
         }
     }
 }

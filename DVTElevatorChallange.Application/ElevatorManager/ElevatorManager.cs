@@ -1,6 +1,7 @@
 ﻿using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Core.Entities;
 using DVTElevatorChallange.Domain.Enum;
+using DVTElevatorChallange.Domain.Interface;
 
 namespace DVTElevatorChallange.Application.ElevatorManager
 {
@@ -9,10 +10,12 @@ namespace DVTElevatorChallange.Application.ElevatorManager
         private readonly List<Elevator> _elevatorList = new();
 
         private readonly IFloorManager _floorManager;
+        private readonly ILoggerService _logger;
 
-        public ElevatorManager(IFloorManager floorManager)
+        public ElevatorManager(IFloorManager floorManager, ILoggerService logger)
         {
             _floorManager = floorManager;
+            _logger = logger;
         }
 
         public bool AddElevators(int elevatorCount)
@@ -34,9 +37,15 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
         public void DispatchElevatorToFloor(int floorNum, Direction direction)
         {
-            var bestElevator = GetBestElevatorToDispatch(floorNum, direction)
-                ?? throw new InvalidOperationException($"No elevator found");
-            AddFloorStop(bestElevator , floorNum);
+            var bestElevator = GetBestElevatorToDispatch(floorNum, direction);
+
+            if (bestElevator == null)
+            {
+                _logger.LogError($"No elevator found for floor {floorNum} in direction {direction}");
+                return;
+            }
+
+            AddFloorStop(bestElevator, floorNum);
         }
 
         public Elevator GetBestElevatorToDispatch(int floorNum, Direction direction)
@@ -57,6 +66,12 @@ namespace DVTElevatorChallange.Application.ElevatorManager
         private async Task MoveToNextStop(int elevatorId)
         {
             var elevator = GetElevatorById(elevatorId);
+
+            if (elevator == null)
+            {
+                _logger.LogError($"Unable to move elevator. Elevator with ID {elevatorId} not found.");
+                return;
+            }
 
             if (elevator.NextStop == null)
             {
@@ -118,7 +133,8 @@ namespace DVTElevatorChallange.Application.ElevatorManager
         {
             if (elevator.PassengerList.Count >= elevator.CapacityLimit)
             {
-                throw new InvalidOperationException("Elevator is at full capacity.");
+                _logger.LogInformation($"Elevator {elevator.Id} is at full capacity.");
+                return;
             }
 
             elevator.PassengerList.Add(passenger);
@@ -157,8 +173,16 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             (elevator.Direction == Direction.Up && floor > elevator.CurrentFloor) ||
             (elevator.Direction == Direction.Down && floor < elevator.CurrentFloor);
 
-        private Elevator GetElevatorById(int elevatorId) =>
-            _elevatorList.FirstOrDefault(e => e.Id == elevatorId)
-            ?? throw new InvalidOperationException($"Elevator with ID {elevatorId} not found.");
+        private Elevator? GetElevatorById(int elevatorId)
+        {
+            var elevator = _elevatorList.FirstOrDefault(e => e.Id == elevatorId);
+
+            if (elevator == null)
+            {
+                _logger.LogError($"Elevator with ID {elevatorId} not found.");
+            }
+
+            return elevator;
+        }
     }
 }

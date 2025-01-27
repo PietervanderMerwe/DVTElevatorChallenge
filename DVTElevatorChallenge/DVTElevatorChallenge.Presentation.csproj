@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DVTElevatorChallange.Application\DVTElevatorChallange.Application.csproj" />
+    <ProjectReference Include="..\DVTElevatorChallange.Infrastructure\DVTElevatorChallange.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

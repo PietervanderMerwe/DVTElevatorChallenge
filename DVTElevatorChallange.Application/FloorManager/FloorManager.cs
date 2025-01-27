@@ -1,11 +1,18 @@
 ﻿using DVTElevatorChallange.Core.Entities;
 using DVTElevatorChallange.Domain.Enum;
+using DVTElevatorChallange.Domain.Interface;
 
 namespace DVTElevatorChallange.Application.FloorManager
 {
     public class FloorManager : IFloorManager
     {
         private readonly List<Floor> _floorList = new();
+        private readonly ILoggerService _logger;
+
+        public FloorManager(ILoggerService logger)
+        {
+            _logger = logger;
+        }
 
         public bool AddFloors(int floorCount)
         {
@@ -19,6 +26,12 @@ namespace DVTElevatorChallange.Application.FloorManager
         {
             var targetFloor = GetFloorByNumber(floorNumber);
 
+            if (targetFloor == null)
+            {
+                _logger.LogError($"Unable to get floor number {floorNumber}");
+                return 0;
+            }
+
             return direction switch
             {
                 Direction.Up => targetFloor.UpQueue.Count,
@@ -30,6 +43,13 @@ namespace DVTElevatorChallange.Application.FloorManager
         public List<Passenger> LoadQueuePassengers(int floorNumber, int passengerAmount, Direction direction)
         {
             var targetFloor = GetFloorByNumber(floorNumber);
+
+            if (targetFloor == null)
+            {
+                _logger.LogError($"Unable to get floor number {floorNumber}");
+                return new List<Passenger>();
+            }
+
             var queue = direction == Direction.Up ? targetFloor.UpQueue : targetFloor.DownQueue;
 
             return DequeuePassengers(queue, passengerAmount);
@@ -38,6 +58,13 @@ namespace DVTElevatorChallange.Application.FloorManager
         public void AddPassenger(int totalPassengers, int currentFloor, int destinationFloor)
         {
             var targetFloor = GetFloorByNumber(currentFloor);
+
+            if (targetFloor == null)
+            {
+                _logger.LogError($"Unable to get floor number {currentFloor}");
+                return;
+            }
+
             var direction = GetDirection(currentFloor, destinationFloor);
 
             var queue = direction == Direction.Up ? targetFloor.UpQueue : targetFloor.DownQueue;
@@ -51,24 +78,51 @@ namespace DVTElevatorChallange.Application.FloorManager
         public void AddElevatorToStoppedElevators(Elevator elevator, int floorNumber)
         {
             var targetFloor = GetFloorByNumber(floorNumber);
+
+            if (targetFloor == null)
+            {
+                _logger.LogError($"Unable to get floor number {floorNumber}");
+                return;
+            }
+
             targetFloor.StoppedElevators.Add(elevator);
         }
 
         public void RemoveElevatorFromStoppedElevators(Elevator elevator, int floorNumber)
         {
             var targetFloor = GetFloorByNumber(floorNumber);
+
+            if (targetFloor == null)
+            {
+                _logger.LogError($"Unable to get floor number {floorNumber}");
+                return;
+            }
+
             targetFloor.StoppedElevators.Remove(elevator);
         }
 
         public List<Elevator> GetElevatorFromStoppedElevators(int floorNumber)
         {
             var targetFloor = GetFloorByNumber(floorNumber);
+
+            if (targetFloor == null)
+            {
+                _logger.LogError($"Unable to get floor number {floorNumber}");
+                return new List<Elevator>();
+            }
+
             return targetFloor.StoppedElevators;
         }
 
         public Direction DetermineDirection(Elevator elevator, int floorNumber)
         {
             var targetFloor = GetFloorByNumber(floorNumber);
+
+            if (targetFloor == null)
+            {
+                _logger.LogError($"Unable to get floor number {floorNumber}");
+                return elevator.Direction;
+            }
 
             if (elevator.Direction != Direction.Idle || elevator.FloorStopList.Any())
             {
@@ -87,10 +141,17 @@ namespace DVTElevatorChallange.Application.FloorManager
                     : Direction.Idle;
         }
 
-        private Floor GetFloorByNumber(int floorNumber)
+        private Floor? GetFloorByNumber(int floorNumber)
         {
-            return _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber)
-                ?? throw new InvalidOperationException($"Floor with floor number {floorNumber} not found.");
+            var floor = _floorList.FirstOrDefault(f => f.FloorNumber == floorNumber);
+
+            if (floor == null)
+            {
+                _logger.LogError($"Floor with floor number {floorNumber} not found.");
+                return null;
+            }
+                
+            return floor;
         }
 
         private List<Passenger> DequeuePassengers(Queue<Passenger> queue, int count)

@@ -1,6 +1,8 @@
 ﻿using DVTElevatorChallange.Application.Building;
 using DVTElevatorChallange.Application.ElevatorManager;
 using DVTElevatorChallange.Application.FloorManager;
+using DVTElevatorChallange.Domain.Interface;
+using DVTElevatorChallange.Infrastructure.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DVTElevatorChallenge.Presentation.Configurations
@@ -13,6 +15,7 @@ namespace DVTElevatorChallenge.Presentation.Configurations
                 .AddSingleton<IBuildingManager, BuildingManager>()
                 .AddSingleton<IElevatorManager, ElevatorManager>()
                 .AddSingleton<IFloorManager, FloorManager>()
+                .AddSingleton<ILoggerService, LoggerService>()
                 .AddTransient<ElevatorConsole>()
                 .BuildServiceProvider();
         }

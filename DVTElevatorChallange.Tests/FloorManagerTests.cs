@@ -63,36 +63,6 @@ namespace DVTElevatorChallange.Tests
         }
 
         [Fact]
-        public void AddElevatorToStoppedElevators_ShouldAddElevator()
-        {
-            _floorManager.AddFloors(3);
-            var elevator = new Elevator { Direction = Direction.Idle };
-            int floorNumber = 1;
-
-            Assert.Equal(0, _floorManager.GetRemainingQueueCount(floorNumber, Direction.Up));
-            Assert.Equal(0, _floorManager.GetRemainingQueueCount(floorNumber, Direction.Down));
-
-            _floorManager.AddElevatorToStoppedElevators(elevator, floorNumber);
-
-            var elevatorList = _floorManager.GetElevatorFromStoppedElevators(floorNumber);
-            Assert.Single(elevatorList);
-        }
-
-        [Fact]
-        public void RemoveElevatorFromStoppedElevators_ShouldRemoveElevator()
-        {
-            _floorManager.AddFloors(3);
-            var elevator = new Elevator { Direction = Direction.Idle };
-            int floorNumber = 1;
-            _floorManager.AddElevatorToStoppedElevators(elevator, floorNumber);
-
-            _floorManager.RemoveElevatorFromStoppedElevators(elevator, floorNumber);
-
-            var elevatorList = _floorManager.GetElevatorFromStoppedElevators(floorNumber);
-            Assert.Empty(elevatorList);
-        }
-
-        [Fact]
         public void DetermineDirection_ShouldChooseCorrectDirection()
         {
             _floorManager.AddFloors(3);

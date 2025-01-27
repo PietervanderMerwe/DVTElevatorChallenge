@@ -94,7 +94,7 @@ namespace DVTElevatorChallenge.Presentation
             Console.WriteLine("");
             Console.WriteLine("Press S to Stop application");
             Console.WriteLine("");
-            Console.WriteLine("Press A to Add passangers to a floor");
+            Console.WriteLine("Press A to Add a number of waiting passangers on a floor");
             Console.WriteLine("");
             Console.WriteLine(new string('-', 80));
             _cursorInputArea = Console.CursorTop;
@@ -104,8 +104,8 @@ namespace DVTElevatorChallenge.Presentation
         {
             try
             {
-                var floors = AskInt("Please enter the amount of floors");
-                var elevators = AskInt("Please enter the amount of elevators");
+                var floors = AskInt("Please enter the amount of floors for the building");
+                var elevators = AskInt("Please enter the amount of elevators for the building");
                 _buildingManager.CreeateBuilding(floors, elevators);
             }
             catch (Exception ex)
@@ -114,7 +114,7 @@ namespace DVTElevatorChallenge.Presentation
             }
         }
 
-        private async void HandleKeyPress(ConsoleKey keyPress)
+        private void HandleKeyPress(ConsoleKey keyPress)
         {
             Console.SetCursorPosition(0, _cursorInputArea);
             switch (keyPress)
@@ -127,23 +127,23 @@ namespace DVTElevatorChallenge.Presentation
 
                 case ConsoleKey.A:
                     ClearConsoleFromRow();
-                    await addPassangersToFloor();
+                    AddPassangersToFloor();
                     break;
 
                 default:
                     ClearConsoleFromRow();
-                    Console.WriteLine("Invalid key. Press S, A");
+                    Console.WriteLine("Invalid key. Press S or A");
                     break;
             }
         }
 
-        private async Task addPassangersToFloor()
+        private void AddPassangersToFloor()
         {
             var floorLimit = _floorManager.GetTotalFloors();
 
-            var totalPassengers = AskInt("How many passengers do you want to add?", floorLimit);
-            var currentFloor = AskInt("What floor do you want to add them to?", floorLimit);
-            var destinationFloor = AskInt("What floor do you want them to go to?", floorLimit);
+            var totalPassengers = AskInt("How many passengers do you want to add to a floor?");
+            var currentFloor = AskInt($"What floor do you want to add {totalPassengers} passangers to?", floorLimit);
+            var destinationFloor = AskInt("What floor do they want to travel to?", floorLimit);
 
             _floorManager.AddPassenger(totalPassengers, currentFloor, destinationFloor);
             var direction = DetermineDirection(currentFloor, destinationFloor);

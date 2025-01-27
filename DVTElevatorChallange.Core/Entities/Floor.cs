@@ -7,7 +7,6 @@
         public int FloorNumber { get; set; }
         public Queue<Passenger> UpQueue { get; set; } = new Queue<Passenger>();
         public Queue<Passenger> DownQueue { get; set; } = new Queue<Passenger>();
-        public List<Elevator> StoppedElevators { get; set; } = new List<Elevator>();
 
         public Floor()
         {

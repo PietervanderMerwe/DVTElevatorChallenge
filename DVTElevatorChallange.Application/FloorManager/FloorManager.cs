@@ -75,45 +75,6 @@ namespace DVTElevatorChallange.Application.FloorManager
             }
         }
 
-        public void AddElevatorToStoppedElevators(Elevator elevator, int floorNumber)
-        {
-            var targetFloor = GetFloorByNumber(floorNumber);
-
-            if (targetFloor == null)
-            {
-                _logger.LogError($"Unable to get floor number {floorNumber}");
-                return;
-            }
-
-            targetFloor.StoppedElevators.Add(elevator);
-        }
-
-        public void RemoveElevatorFromStoppedElevators(Elevator elevator, int floorNumber)
-        {
-            var targetFloor = GetFloorByNumber(floorNumber);
-
-            if (targetFloor == null)
-            {
-                _logger.LogError($"Unable to get floor number {floorNumber}");
-                return;
-            }
-
-            targetFloor.StoppedElevators.Remove(elevator);
-        }
-
-        public List<Elevator> GetElevatorFromStoppedElevators(int floorNumber)
-        {
-            var targetFloor = GetFloorByNumber(floorNumber);
-
-            if (targetFloor == null)
-            {
-                _logger.LogError($"Unable to get floor number {floorNumber}");
-                return new List<Elevator>();
-            }
-
-            return targetFloor.StoppedElevators;
-        }
-
         public Direction DetermineDirection(Elevator elevator, int floorNumber)
         {
             var targetFloor = GetFloorByNumber(floorNumber);

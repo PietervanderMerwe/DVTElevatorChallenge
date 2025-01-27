@@ -108,8 +108,6 @@ namespace DVTElevatorChallange.Application.ElevatorManager
 
         public void ProcessFloorStop(Elevator elevator, int floorNum)
         {
-            _floorManager.AddElevatorToStoppedElevators(elevator, floorNum);
-
             var passengersToUnload = elevator.PassengerList
                 .Where(p => p.DestinationFloor == floorNum)
                 .ToList();
@@ -137,8 +135,6 @@ namespace DVTElevatorChallange.Application.ElevatorManager
                 elevator.Status = ElevatorStatus.Idle;
                 elevator.Direction = Direction.Idle;
             }
-
-            _floorManager.RemoveElevatorFromStoppedElevators(elevator, floorNum);
 
             if (_floorManager.GetRemainingQueueCount(floorNum, direction) > 0)
             {

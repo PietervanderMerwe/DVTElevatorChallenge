@@ -43,23 +43,6 @@ namespace DVTElevatorChallange.Tests
         }
 
         [Fact]
-        public void DispatchElevatorToFloor_ShouldAddFloorStopForBestElevator()
-        {
-            _elevatorManager.AddElevators(1);
-            var elevator = _elevatorManager.GetAllElevators().First();
-            int floorNumber = 5;
-            var direction = Direction.Up;
-
-            _floorManagerMock
-                .Setup(f => f.AddElevatorToStoppedElevators(It.IsAny<Elevator>(), floorNumber));
-
-            _elevatorManager.DispatchElevatorToFloor(floorNumber, direction);
-
-            Assert.Contains(floorNumber, elevator.FloorStopList);
-            Assert.Equal(Direction.Up, elevator.Direction);
-        }
-
-        [Fact]
         public async Task MoveAllElevatorsToNextStopsAsync_ShouldMoveElevatorsToNextStop()
         {
             _elevatorManager.AddElevators(1);

@@ -2,8 +2,8 @@
 {
     public enum Direction
     {
-        Down = -1,
-        Idle = 0,
-        Up = 1
+        Down,
+        Idle,
+        Up
     }
 }

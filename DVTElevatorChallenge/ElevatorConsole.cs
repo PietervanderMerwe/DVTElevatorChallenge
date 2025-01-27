@@ -1,14 +1,11 @@
-﻿using DVTElevatorChallange.Application.Building;
-using DVTElevatorChallange.Application.ElevatorManager;
+﻿using DVTElevatorChallange.Application.ElevatorManager;
 using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Domain.Enum;
-using System.Threading;
 
 namespace DVTElevatorChallenge.Presentation
 {
     public class ElevatorConsole
     {
-        private IBuildingManager _buildingManager;
         private IElevatorManager _elevatorManager;
         private IFloorManager _floorManager;
 
@@ -18,9 +15,8 @@ namespace DVTElevatorChallenge.Presentation
         private Task _movingTask = null;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public ElevatorConsole(IBuildingManager buildingManager, IElevatorManager elevatorManager, IFloorManager floorManager)
+        public ElevatorConsole(IElevatorManager elevatorManager, IFloorManager floorManager)
         {
-            _buildingManager = buildingManager;
             _elevatorManager = elevatorManager;
             _floorManager = floorManager;
         }
@@ -106,7 +102,8 @@ namespace DVTElevatorChallenge.Presentation
             {
                 var floors = AskInt("Please enter the amount of floors for the building");
                 var elevators = AskInt("Please enter the amount of elevators for the building");
-                _buildingManager.CreeateBuilding(floors, elevators);
+                _floorManager.AddFloors(floors);
+                _elevatorManager.AddElevators(elevators);
             }
             catch (Exception ex)
             {

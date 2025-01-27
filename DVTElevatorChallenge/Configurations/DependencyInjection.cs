@@ -1,5 +1,4 @@
-﻿using DVTElevatorChallange.Application.Building;
-using DVTElevatorChallange.Application.ElevatorManager;
+﻿using DVTElevatorChallange.Application.ElevatorManager;
 using DVTElevatorChallange.Application.FloorManager;
 using DVTElevatorChallange.Domain.Interface;
 using DVTElevatorChallange.Infrastructure.Service;
@@ -12,7 +11,6 @@ namespace DVTElevatorChallenge.Presentation.Configurations
         public ServiceProvider SetupDI()
         {
             return new ServiceCollection()
-                .AddSingleton<IBuildingManager, BuildingManager>()
                 .AddSingleton<IElevatorManager, ElevatorManager>()
                 .AddSingleton<IFloorManager, FloorManager>()
                 .AddSingleton<ILoggerService, LoggerService>()

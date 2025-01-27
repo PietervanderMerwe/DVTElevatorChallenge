@@ -13,7 +13,7 @@ namespace DVTElevatorChallange.Tests
         private readonly Mock<IFloorManager> _floorManagerMock;
         private readonly Mock<ILoggerService> _loggerServiceMock;
         private readonly ElevatorManager _elevatorManager;
-
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         public ElevatorManagerTests()
         {
             _floorManagerMock = new Mock<IFloorManager>();
@@ -70,7 +70,7 @@ namespace DVTElevatorChallange.Tests
             _floorManagerMock
                 .Setup(f => f.AddFloors(10));
 
-            await _elevatorManager.MoveAllElevatorsToNextStopsAsync();
+            await _elevatorManager.MoveAllElevatorsToNextStopsAsync(_cancellationTokenSource.Token);
 
             Assert.Equal(5, elevator.CurrentFloor);
             Assert.Null(elevator.NextStop);

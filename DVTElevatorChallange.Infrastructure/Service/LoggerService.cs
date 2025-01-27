@@ -5,7 +5,7 @@ namespace DVTElevatorChallange.Infrastructure.Service
 {
     public class LoggerService : ILoggerService
     {
-        private readonly Serilog.ILogger _logger;
+        private readonly ILogger _logger;
 
         public LoggerService()
         {

@@ -90,13 +90,13 @@ namespace DVTElevatorChallange.Application.ElevatorManager
             var direction = _floorManager.DetermineDirection(elevator, floorNum);
             var passengersToLoad = _floorManager.LoadQueuePassengers(floorNum, elevator.CapacityLimit - elevator.PassengerList.Count, direction);
 
-            foreach (var passenger in passengersToLoad)
+            if (passengersToLoad != null && passengersToLoad.Any())
             {
-                AddPassengerToElevator(passenger, elevator);
-            }
+                foreach (var passenger in passengersToLoad)
+                {
+                    AddPassengerToElevator(passenger, elevator);
+                }
 
-            if (passengersToLoad.Any())
-            {
                 AddFloorStop(elevator, passengersToLoad.First().DestinationFloor);
             }
             else

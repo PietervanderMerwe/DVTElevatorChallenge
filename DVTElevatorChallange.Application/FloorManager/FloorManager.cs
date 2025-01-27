@@ -58,11 +58,17 @@ namespace DVTElevatorChallange.Application.FloorManager
             targetFloor.StoppedElevators.Remove(elevator);
         }
 
+        public List<Elevator> GetElevatorFromStoppedElevators(int floorNumber)
+        {
+            var targetFloor = GetFloorByNumber(floorNumber);
+            return targetFloor.StoppedElevators;
+        }
+
         public Direction DetermineDirection(Elevator elevator, int floorNumber)
         {
             var targetFloor = GetFloorByNumber(floorNumber);
 
-            if (elevator.Direction == Direction.Idle || !elevator.FloorStopList.Any())
+            if (elevator.Direction != Direction.Idle || elevator.FloorStopList.Any())
             {
                 return targetFloor.UpQueue.Count > targetFloor.DownQueue.Count ? Direction.Up : Direction.Down;
             }
